@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
+    <main class="content-wrapper">
+        <section class="page-heading">
+            <h2>Gestion de vehiculos</h2>
+            <p>Registro y control operativo de unidades</p>
+        </section>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <section class="panel-card form-panel">
+            <div class="panel-heading">
+                <h3 th:text="${vehiculoForm.idVehiculo == null ? 'Registrar nuevo vehiculo' : 'Editar vehiculo'}">
+                    Registrar nuevo vehiculo
+                </h3>
+                <a th:if="${vehiculoForm.idVehiculo != null}" th:href="@{/vehiculos}" class="btn btn-outline-secondary btn-sm">
+                    Cancelar edicion
+                </a>
+            </div>
+
+            <form method="post"
+                  th:object="${vehiculoForm}"
+                  th:action="${vehiculoForm.idVehiculo == null} ? @{/vehiculos} : @{/vehiculos/{id}(id=${vehiculoForm.idVehiculo})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" th:field="*{idVehiculo}">
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="placa" class="form-label">Placa</label>
+                        <input id="placa" type="text" class="form-control" th:field="*{placa}" placeholder="Ej. ABC-123">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="marca" class="form-label">Marca</label>
+                        <input id="marca" type="text" class="form-control" th:field="*{marca}" placeholder="Ingrese marca">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="modelo" class="form-label">Modelo</label>
+                        <input id="modelo" type="text" class="form-control" th:field="*{modelo}" placeholder="Ingrese modelo">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select id="estado" class="form-select" th:field="*{estado}">
+                            <option th:each="estadoItem : ${estados}"
+                                    th:value="${estadoItem}"
+                                    th:text="${estadoItem}">
+                                DISPONIBLE
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span th:text="${vehiculoForm.idVehiculo == null ? 'Registrar vehiculo' : 'Guardar cambios'}">
+                            Registrar vehiculo
+                        </span>
+                    </button>
+                    <a th:href="@{/vehiculos}" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel-card table-panel vehicle-table">
+            <div class="panel-heading">
+                <h3>Vehiculos registrados</h3>
+                <span th:text="${#lists.size(vehiculos)} + ' registros'">0 registros</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Placa</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(vehiculos)}">
+                        <td colspan="6" class="text-center text-muted py-4">No hay vehiculos registrados.</td>
+                    </tr>
+                    <tr th:each="vehiculo : ${vehiculos}">
+                        <td th:text="${vehiculo.idVehiculo}">1</td>
+                        <td th:text="${vehiculo.placa}">ABC-123</td>
+                        <td th:text="${vehiculo.marca}">Hyundai</td>
+                        <td th:text="${vehiculo.modelo}">H100</td>
+                        <td>
+                            <span th:class="${vehiculo.estado.name() == 'DISPONIBLE' ? 'status status-success' : (vehiculo.estado.name() == 'MANTENIMIENTO' ? 'status status-warning' : 'status status-danger')}"
+                                  th:text="${vehiculo.estado}">
+                                DISPONIBLE
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <a th:href="@{/vehiculos/{id}/editar(id=${vehiculo.idVehiculo})}" class="btn btn-outline-primary btn-sm">
+                                    Editar
+                                </a>
+                                <form th:each="estadoDestino : ${estados}"
+                                      th:if="${vehiculo.estado.name() != estadoDestino.name()}"
+                                      th:action="@{/vehiculos/{id}/estado(id=${vehiculo.idVehiculo})}"
+                                      method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="estado" th:value="${estadoDestino}">
+                                    <button type="submit"
+                                            th:class="${estadoDestino.name() == 'DISPONIBLE' ? 'btn btn-outline-success btn-sm' : (estadoDestino.name() == 'MANTENIMIENTO' ? 'btn btn-outline-warning btn-sm' : 'btn btn-outline-danger btn-sm')}"
+                                            th:text="${estadoDestino}">
+                                        DISPONIBLE
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
