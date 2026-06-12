@@ -40,6 +40,18 @@ LOGISTECH es un prototipo web academico desarrollado con Java y Spring Boot. El 
 - Registro de incidencias.
 - Reporte de rutas con filtros y exportacion Excel.
 
+## Versionamiento Academico Por Fases
+
+| Periodo | Responsable | Fase / Entrega |
+| --- | --- | --- |
+| 28-30 mayo | GonzaChristian | Base del proyecto, arquitectura MVC + DAO + SOLID, Maven, MySQL y layout inicial. |
+| 31 mayo - 1 junio | GonzaChristian | Login con roles, BCrypt, cierre de sesion y dashboard. |
+| 2-4 junio | Denis Rivera Limache | CRUD de conductores y vehiculos, validaciones con Guava y Commons Lang, pruebas unitarias. |
+| 5-6 junio | Moises Juarez | Registro de rutas y asignaciones con validacion de disponibilidad. |
+| 7 junio | Moises Juarez | GPS simulado, control de recorrido, incidencias y eventos con Logback. |
+| 8-9 junio | GonzaChristian | Reportes con filtros y exportacion Excel usando Apache POI. |
+| 10 junio | Equipo LOGISTECH | Pruebas finales, documentacion APF3 y preparacion para GitHub. |
+
 ## Rutas Principales
 
 - `/login`: inicio de sesion.
