@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modulo.titulo()})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: app(${modulo.menuActivo()}, ${modulo.titulo()}, ~{::main})}">
+    <main class="content-wrapper">
+        <section class="page-heading">
+            <h2 th:text="${modulo.titulo()}">Modulo</h2>
+            <p th:text="${modulo.descripcion()}">Base preparada.</p>
+        </section>
+
+        <section class="panel-card empty-state">
+            <span class="metric-icon">LT</span>
+            <h3>Modulo en preparacion</h3>
+            <p>La estructura MVC, DAO, servicio y vista ya esta lista para continuar con la implementacion funcional.</p>
+        </section>
+    </main>
+</div>
+</body>
+</html>

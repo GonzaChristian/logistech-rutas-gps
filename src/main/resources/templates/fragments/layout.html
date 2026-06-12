@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' | LOGISTECH'">LOGISTECH</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/logistech.css}">
+</head>
+<body>
+<div th:fragment="app(activeMenu, pageTitle, content)" class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">GPS</div>
+            <div>
+                <h1>LogisTech</h1>
+                <span>Sistema de Trazabilidad de Rutas GPS</span>
+            </div>
+        </div>
+
+        <nav class="side-nav" aria-label="Menu principal">
+            <a th:href="@{/dashboard}" th:classappend="${activeMenu == 'dashboard'} ? ' active'">
+                <span class="nav-icon">IN</span>
+                <span>Inicio</span>
+            </a>
+            <a th:href="@{/conductores}" th:classappend="${activeMenu == 'conductores'} ? ' active'">
+                <span class="nav-icon">CO</span>
+                <span>Conductores</span>
+            </a>
+            <a th:href="@{/vehiculos}" th:classappend="${activeMenu == 'vehiculos'} ? ' active'">
+                <span class="nav-icon">VE</span>
+                <span>Vehiculos</span>
+            </a>
+            <a th:href="@{/rutas}" th:classappend="${activeMenu == 'rutas'} ? ' active'">
+                <span class="nav-icon">RU</span>
+                <span>Rutas</span>
+            </a>
+            <a th:href="@{/asignaciones}" th:classappend="${activeMenu == 'asignaciones'} ? ' active'">
+                <span class="nav-icon">AS</span>
+                <span>Asignaciones</span>
+            </a>
+            <a th:href="@{/recorridos}" th:classappend="${activeMenu == 'recorridos'} ? ' active'">
+                <span class="nav-icon">GP</span>
+                <span>GPS simulado</span>
+            </a>
+            <a th:href="@{/incidencias}" th:classappend="${activeMenu == 'incidencias'} ? ' active'">
+                <span class="nav-icon">IC</span>
+                <span>Incidencias</span>
+            </a>
+            <a th:href="@{/reportes}" th:classappend="${activeMenu == 'reportes'} ? ' active'">
+                <span class="nav-icon">RE</span>
+                <span>Reportes</span>
+            </a>
+        </nav>
+
+        <form th:action="@{/logout}" method="post" class="logout-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit">
+                <span class="nav-icon">SA</span>
+                <span>Cerrar sesion</span>
+            </button>
+        </form>
+    </aside>
+
+    <section class="main-panel">
+        <header class="topbar">
+            <div class="topbar-title" th:text="${pageTitle}">Panel principal</div>
+            <div class="user-box">
+                <span class="user-role" th:text="${rolSesion ?: 'USUARIO'}">SUPERVISOR</span>
+                <span class="user-name" th:text="${usuarioSesion ?: ''}">supervisor@logistech.local</span>
+            </div>
+        </header>
+        <div class="content-wrapper" th:replace="${content}">
+            <main></main>
+        </div>
+    </section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
