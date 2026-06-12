@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
+    <main class="content-wrapper">
+        <section class="page-heading">
+            <h2>Asignacion de rutas</h2>
+            <p>Programacion de conductor y vehiculo por ruta</p>
+        </section>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <section class="panel-card form-panel">
+            <div class="panel-heading">
+                <h3>Nueva asignacion</h3>
+                <span th:text="${#lists.size(rutasDisponibles)} + ' rutas disponibles'">0 rutas disponibles</span>
+            </div>
+
+            <form method="post" th:object="${asignacionForm}" th:action="@{/asignaciones}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="idRuta" class="form-label">Ruta</label>
+                        <select id="idRuta" class="form-select" th:field="*{idRuta}">
+                            <option value="">Seleccione ruta</option>
+                            <option th:each="ruta : ${rutasDisponibles}"
+                                    th:value="${ruta.idRuta}"
+                                    th:text="${ruta.origen + ' -> ' + ruta.destino + ' (' + ruta.fechaProgramada + ')'}">
+                                Ruta
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="idConductor" class="form-label">Conductor</label>
+                        <select id="idConductor" class="form-select" th:field="*{idConductor}">
+                            <option value="">Seleccione conductor</option>
+                            <option th:each="conductor : ${conductoresDisponibles}"
+                                    th:value="${conductor.idConductor}"
+                                    th:text="${conductor.nombres + ' ' + conductor.apellidos + ' - ' + conductor.dni}">
+                                Conductor
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="idVehiculo" class="form-label">Vehiculo</label>
+                        <select id="idVehiculo" class="form-select" th:field="*{idVehiculo}">
+                            <option value="">Seleccione vehiculo</option>
+                            <option th:each="vehiculo : ${vehiculosDisponibles}"
+                                    th:value="${vehiculo.idVehiculo}"
+                                    th:text="${vehiculo.placa + ' - ' + vehiculo.marca + ' ' + vehiculo.modelo}">
+                                Vehiculo
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Asignar ruta</button>
+                    <a th:href="@{/asignaciones}" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel-card table-panel assignment-table">
+            <div class="panel-heading">
+                <h3>Asignaciones registradas</h3>
+                <span th:text="${#lists.size(asignaciones)} + ' registros'">0 registros</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ruta</th>
+                        <th>Conductor</th>
+                        <th>Vehiculo</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(asignaciones)}">
+                        <td colspan="7" class="text-center text-muted py-4">No hay asignaciones registradas.</td>
+                    </tr>
+                    <tr th:each="asignacion : ${asignaciones}">
+                        <td th:text="${asignacion.idAsignacion}">1</td>
+                        <td th:text="${asignacion.ruta.origen + ' -> ' + asignacion.ruta.destino}">Ruta</td>
+                        <td th:text="${asignacion.conductor.nombres + ' ' + asignacion.conductor.apellidos}">Conductor</td>
+                        <td th:text="${asignacion.vehiculo.placa}">ABC-123</td>
+                        <td th:text="${asignacion.fechaAsignacion}">2026-06-12</td>
+                        <td>
+                            <span th:class="${asignacion.estado.name() == 'PROGRAMADA' ? 'status status-warning' : (asignacion.estado.name() == 'EN_CURSO' ? 'status status-info' : (asignacion.estado.name() == 'FINALIZADA' ? 'status status-success' : 'status status-danger'))}"
+                                  th:text="${asignacion.estado}">
+                                PROGRAMADA
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <form th:if="${asignacion.estado.name() == 'PROGRAMADA'}"
+                                      th:action="@{/asignaciones/{id}/estado(id=${asignacion.idAsignacion})}"
+                                      method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="estado" value="EN_CURSO">
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">En curso</button>
+                                </form>
+                                <form th:if="${asignacion.estado.name() == 'PROGRAMADA' or asignacion.estado.name() == 'EN_CURSO'}"
+                                      th:action="@{/asignaciones/{id}/estado(id=${asignacion.idAsignacion})}"
+                                      method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="estado" value="FINALIZADA">
+                                    <button type="submit" class="btn btn-outline-success btn-sm">Finalizar</button>
+                                </form>
+                                <form th:if="${asignacion.estado.name() == 'PROGRAMADA' or asignacion.estado.name() == 'EN_CURSO'}"
+                                      th:action="@{/asignaciones/{id}/estado(id=${asignacion.idAsignacion})}"
+                                      method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="estado" value="CANCELADA">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Cancelar</button>
+                                </form>
+                                <span th:if="${asignacion.estado.name() == 'FINALIZADA' or asignacion.estado.name() == 'CANCELADA'}"
+                                      class="text-muted small">
+                                    Cerrada
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

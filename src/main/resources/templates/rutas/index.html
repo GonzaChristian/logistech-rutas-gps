@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
+    <main class="content-wrapper">
+        <section class="page-heading">
+            <h2>Gestion de rutas</h2>
+            <p>Registro y programacion de rutas retail</p>
+        </section>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <section class="panel-card form-panel">
+            <div class="panel-heading">
+                <h3 th:text="${rutaForm.idRuta == null ? 'Registrar nueva ruta' : 'Editar ruta'}">
+                    Registrar nueva ruta
+                </h3>
+                <a th:if="${rutaForm.idRuta != null}" th:href="@{/rutas}" class="btn btn-outline-secondary btn-sm">
+                    Cancelar edicion
+                </a>
+            </div>
+
+            <form method="post"
+                  th:object="${rutaForm}"
+                  th:action="${rutaForm.idRuta == null} ? @{/rutas} : @{/rutas/{id}(id=${rutaForm.idRuta})}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" th:field="*{idRuta}">
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="origen" class="form-label">Origen</label>
+                        <input id="origen" type="text" class="form-control" th:field="*{origen}" placeholder="Ingrese origen">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="destino" class="form-label">Destino</label>
+                        <input id="destino" type="text" class="form-control" th:field="*{destino}" placeholder="Ingrese destino">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="fechaProgramada" class="form-label">Fecha programada</label>
+                        <input id="fechaProgramada" type="date" class="form-control" th:field="*{fechaProgramada}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select id="estado" class="form-select" th:field="*{estado}">
+                            <option th:each="estadoItem : ${estados}"
+                                    th:value="${estadoItem}"
+                                    th:text="${estadoItem}">
+                                PROGRAMADA
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span th:text="${rutaForm.idRuta == null ? 'Registrar ruta' : 'Guardar cambios'}">
+                            Registrar ruta
+                        </span>
+                    </button>
+                    <a th:href="@{/rutas}" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel-card table-panel route-table">
+            <div class="panel-heading">
+                <h3>Rutas registradas</h3>
+                <span th:text="${#lists.size(rutas)} + ' registros'">0 registros</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(rutas)}">
+                        <td colspan="6" class="text-center text-muted py-4">No hay rutas registradas.</td>
+                    </tr>
+                    <tr th:each="ruta : ${rutas}">
+                        <td th:text="${ruta.idRuta}">1</td>
+                        <td th:text="${ruta.origen}">Tienda A</td>
+                        <td th:text="${ruta.destino}">Tienda B</td>
+                        <td th:text="${ruta.fechaProgramada}">2026-06-12</td>
+                        <td>
+                            <span th:class="${ruta.estado.name() == 'PROGRAMADA' ? 'status status-warning' : (ruta.estado.name() == 'EN_CURSO' ? 'status status-info' : (ruta.estado.name() == 'FINALIZADA' ? 'status status-success' : 'status status-danger'))}"
+                                  th:text="${ruta.estado}">
+                                PROGRAMADA
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/rutas/{id}/editar(id=${ruta.idRuta})}" class="btn btn-outline-primary btn-sm">
+                                Editar
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
