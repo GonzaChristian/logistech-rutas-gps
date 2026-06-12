@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
+    <main class="content-wrapper">
+        <section class="page-heading">
+            <h2>Control de incidencias</h2>
+            <p>Registro y seguimiento de eventos del recorrido</p>
+        </section>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <section class="panel-card form-panel">
+            <div class="panel-heading">
+                <h3>Registrar incidencia</h3>
+                <span th:text="${#lists.size(asignacionesControl)} + ' asignaciones activas'">0 asignaciones activas</span>
+            </div>
+
+            <form method="post" th:object="${incidenciaForm}" th:action="@{/incidencias}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="idAsignacion" class="form-label">Asignacion</label>
+                        <select id="idAsignacion" class="form-select" th:field="*{idAsignacion}">
+                            <option value="">Seleccione asignacion</option>
+                            <option th:each="asignacion : ${asignacionesControl}"
+                                    th:value="${asignacion.idAsignacion}"
+                                    th:text="${asignacion.ruta.origen + ' -> ' + asignacion.ruta.destino + ' | ' + asignacion.vehiculo.placa}">
+                                Asignacion
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tipo" class="form-label">Tipo</label>
+                        <select id="tipo" class="form-select" th:field="*{tipo}">
+                            <option value="">Seleccione tipo</option>
+                            <option th:each="tipoItem : ${tiposIncidencia}"
+                                    th:value="${tipoItem}"
+                                    th:text="${tipoItem}">
+                                RETRASO
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label for="descripcion" class="form-label">Descripcion</label>
+                        <textarea id="descripcion" class="form-control" rows="3"
+                                  th:field="*{descripcion}" placeholder="Detalle de incidencia"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Registrar incidencia</button>
+                    <a th:href="@{/incidencias}" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel-card table-panel incidence-table">
+            <div class="panel-heading">
+                <h3>Incidencias registradas</h3>
+                <span th:text="${#lists.size(incidencias)} + ' registros'">0 registros</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ruta</th>
+                        <th>Conductor</th>
+                        <th>Vehiculo</th>
+                        <th>Tipo</th>
+                        <th>Descripcion</th>
+                        <th>Estado</th>
+                        <th>Fecha/hora</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(incidencias)}">
+                        <td colspan="8" class="text-center text-muted py-4">No hay incidencias registradas.</td>
+                    </tr>
+                    <tr th:each="incidencia : ${incidencias}">
+                        <td th:text="${incidencia.idIncidencia}">1</td>
+                        <td th:text="${incidencia.asignacion.ruta.origen + ' -> ' + incidencia.asignacion.ruta.destino}">Ruta</td>
+                        <td th:text="${incidencia.asignacion.conductor.nombres + ' ' + incidencia.asignacion.conductor.apellidos}">Conductor</td>
+                        <td th:text="${incidencia.asignacion.vehiculo.placa}">ABC-123</td>
+                        <td th:text="${incidencia.tipo}">RETRASO</td>
+                        <td th:text="${incidencia.descripcion ?: '-'}">Detalle</td>
+                        <td>
+                            <span th:class="${incidencia.estado.name() == 'RESUELTA' ? 'status status-success' : (incidencia.estado.name() == 'EN_REVISION' ? 'status status-info' : 'status status-warning')}"
+                                  th:text="${incidencia.estado}">
+                                PENDIENTE
+                            </span>
+                        </td>
+                        <td th:text="${#temporals.format(incidencia.fechaHora, 'yyyy-MM-dd HH:mm')}">2026-06-12 10:00</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
