@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
+    <main class="content-wrapper">
+        <section class="page-heading">
+            <h2>Reporte de rutas</h2>
+            <p>Consulta operativa por estado, conductor y fecha programada</p>
+        </section>
+
+        <section class="panel-card form-panel">
+            <div class="panel-heading">
+                <h3>Filtros de busqueda</h3>
+                <span th:text="${#lists.size(filas)} + ' resultados'">0 resultados</span>
+            </div>
+
+            <form method="get" th:object="${filtro}" th:action="@{/reportes}">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select id="estado" class="form-select" th:field="*{estado}">
+                            <option value="">Todos</option>
+                            <option th:each="estadoItem : ${estados}"
+                                    th:value="${estadoItem}"
+                                    th:text="${estadoItem}">
+                                PROGRAMADA
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="idConductor" class="form-label">Conductor</label>
+                        <select id="idConductor" class="form-select" th:field="*{idConductor}">
+                            <option value="">Todos</option>
+                            <option th:each="conductor : ${conductores}"
+                                    th:value="${conductor.idConductor}"
+                                    th:text="${conductor.nombres + ' ' + conductor.apellidos + ' - ' + conductor.dni}">
+                                Conductor
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaInicio" class="form-label">Fecha inicio</label>
+                        <input id="fechaInicio" type="date" class="form-control" th:field="*{fechaInicio}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaFin" class="form-label">Fecha fin</label>
+                        <input id="fechaFin" type="date" class="form-control" th:field="*{fechaFin}">
+                    </div>
+                </div>
+
+                <div class="form-actions report-actions">
+                    <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+                    <a th:href="@{/reportes}" class="btn btn-outline-secondary">Limpiar</a>
+                    <a class="btn btn-outline-success"
+                       th:href="@{/reportes/exportar(estado=${filtro.estado}, idConductor=${filtro.idConductor}, fechaInicio=${filtro.fechaInicio}, fechaFin=${filtro.fechaFin})}">
+                        Exportar Excel
+                    </a>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel-card table-panel report-table">
+            <div class="panel-heading">
+                <h3>Resultados</h3>
+                <span th:text="${#lists.size(filas)} + ' rutas'">0 rutas</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>Asignacion</th>
+                        <th>Ruta</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Fecha programada</th>
+                        <th>Fecha asignacion</th>
+                        <th>Estado</th>
+                        <th>Conductor</th>
+                        <th>DNI</th>
+                        <th>Vehiculo</th>
+                        <th>Placa</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(filas)}">
+                        <td colspan="11" class="text-center text-muted py-4">No hay rutas para los filtros seleccionados.</td>
+                    </tr>
+                    <tr th:each="fila : ${filas}">
+                        <td th:text="${fila.idAsignacion}">1</td>
+                        <td th:text="${fila.idRuta}">1</td>
+                        <td th:text="${fila.origen}">CD Norte</td>
+                        <td th:text="${fila.destino}">Tienda Sur</td>
+                        <td th:text="${fila.fechaProgramada}">2026-06-12</td>
+                        <td th:text="${fila.fechaAsignacion}">2026-06-11</td>
+                        <td>
+                            <span th:class="${fila.estado.name() == 'PROGRAMADA' ? 'status status-warning' : (fila.estado.name() == 'EN_CURSO' ? 'status status-info' : (fila.estado.name() == 'FINALIZADA' ? 'status status-success' : 'status status-danger'))}"
+                                  th:text="${fila.estado}">
+                                PROGRAMADA
+                            </span>
+                        </td>
+                        <td th:text="${fila.conductor}">Conductor</td>
+                        <td th:text="${fila.dniConductor}">70000001</td>
+                        <td th:text="${fila.vehiculo}">Nissan Urban</td>
+                        <td th:text="${fila.placa}">ABC-123</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
