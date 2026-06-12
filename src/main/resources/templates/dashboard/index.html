@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
+    <main class="content-wrapper">
+        <section class="page-heading">
+            <h2>Panel principal</h2>
+            <p>
+                Bienvenido,
+                <span th:text="${usuarioSesion ?: 'usuario'}">usuario</span>
+            </p>
+        </section>
+
+        <section class="metric-grid">
+            <article class="metric-card">
+                <span class="metric-icon">RU</span>
+                <p>Rutas registradas</p>
+                <strong th:text="${resumen.rutasRegistradas()}">0</strong>
+            </article>
+            <article class="metric-card">
+                <span class="metric-icon">EC</span>
+                <p>Rutas en curso</p>
+                <strong th:text="${resumen.rutasEnCurso()}">0</strong>
+            </article>
+            <article class="metric-card">
+                <span class="metric-icon">IC</span>
+                <p>Incidencias registradas</p>
+                <strong th:text="${resumen.incidenciasRegistradas()}">0</strong>
+            </article>
+            <article class="metric-card">
+                <span class="metric-icon">OK</span>
+                <p>Rutas finalizadas</p>
+                <strong th:text="${resumen.rutasFinalizadas()}">0</strong>
+            </article>
+        </section>
+
+        <section class="panel-card">
+            <div class="panel-heading">
+                <h3>Ultimas rutas asignadas</h3>
+                <span>Vista base para el avance APF3</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>Ruta</th>
+                        <th>Conductor</th>
+                        <th>Vehiculo</th>
+                        <th>Estado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>R001</td>
+                        <td>Juan Perez</td>
+                        <td>ABC-123</td>
+                        <td><span class="status status-info">En curso</span></td>
+                    </tr>
+                    <tr>
+                        <td>R002</td>
+                        <td>Luis Torres</td>
+                        <td>BCD-456</td>
+                        <td><span class="status status-warning">Pendiente</span></td>
+                    </tr>
+                    <tr>
+                        <td>R003</td>
+                        <td>Carlos Diaz</td>
+                        <td>CDE-789</td>
+                        <td><span class="status status-success">Finalizada</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
