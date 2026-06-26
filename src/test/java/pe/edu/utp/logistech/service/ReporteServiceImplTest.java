@@ -86,6 +86,19 @@ class ReporteServiceImplTest {
     }
 
     @Test
+    void consultarRutasDebeRetornarListaVaciaCuandoNoHayCoincidencias() {
+        when(reporteDao.listarAsignacionesReporte()).thenReturn(List.of(asignacion(1L, 10L,
+                EstadoRuta.EN_CURSO, LocalDate.of(2026, 6, 12), 100L)));
+
+        ReporteFiltroDto filtro = new ReporteFiltroDto();
+        filtro.setEstado(EstadoRuta.FINALIZADA);
+        filtro.setFechaInicio(LocalDate.of(2026, 6, 1));
+        filtro.setFechaFin(LocalDate.of(2026, 6, 30));
+
+        assertThat(reporteService.consultarRutas(filtro)).isEmpty();
+    }
+
+    @Test
     void exportarRutasExcelDebeGenerarArchivoConCabecerasYDatos() throws Exception {
         when(reporteDao.listarAsignacionesReporte()).thenReturn(List.of(asignacion(1L, 10L,
                 EstadoRuta.EN_CURSO, LocalDate.of(2026, 6, 12), 100L)));

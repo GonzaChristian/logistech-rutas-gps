@@ -2,6 +2,7 @@ package pe.edu.utp.logistech.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -29,7 +30,12 @@ public class ReporteController {
 
     @GetMapping
     public String index(@ModelAttribute("filtro") ReporteFiltroDto filtro, Model model) {
-        cargarModelo(model, filtro);
+        try {
+            cargarModelo(model, filtro);
+        } catch (IllegalArgumentException ex) {
+            cargarModeloConFilas(model, filtro, List.of());
+            model.addAttribute("error", ex.getMessage());
+        }
         return "reportes/index";
     }
 
@@ -46,8 +52,12 @@ public class ReporteController {
     }
 
     private void cargarModelo(Model model, ReporteFiltroDto filtro) {
+        cargarModeloConFilas(model, filtro, reporteService.consultarRutas(filtro));
+    }
+
+    private void cargarModeloConFilas(Model model, ReporteFiltroDto filtro, List<?> filas) {
         model.addAttribute("filtro", filtro);
-        model.addAttribute("filas", reporteService.consultarRutas(filtro));
+        model.addAttribute("filas", filas);
         model.addAttribute("conductores", reporteService.listarConductores());
         model.addAttribute("estados", EstadoRuta.values());
         model.addAttribute("activeMenu", "reportes");

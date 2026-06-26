@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,6 +55,14 @@ class VehiculoServiceImplTest {
         assertThatThrownBy(() -> vehiculoService.registrar(form))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("placa");
+    }
+
+    @Test
+    void listarVehiculosDebeDelegarAlDao() {
+        Vehiculo vehiculo = vehiculoExistente();
+        when(vehiculoDao.listarTodos()).thenReturn(List.of(vehiculo));
+
+        assertThat(vehiculoService.listarVehiculos()).containsExactly(vehiculo);
     }
 
     @Test

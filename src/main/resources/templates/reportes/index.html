@@ -9,6 +9,8 @@
             <p>Consulta operativa por estado, conductor y fecha programada</p>
         </section>
 
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
         <section class="panel-card form-panel">
             <div class="panel-heading">
                 <h3>Filtros de busqueda</h3>

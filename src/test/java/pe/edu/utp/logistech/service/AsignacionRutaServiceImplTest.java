@@ -120,6 +120,18 @@ class AsignacionRutaServiceImplTest {
     }
 
     @Test
+    void registrarDebeRechazarRutaConAsignacionActiva() {
+        when(rutaDao.buscarPorId(1L)).thenReturn(Optional.of(rutaValida()));
+        when(conductorDao.buscarPorId(2L)).thenReturn(Optional.of(conductorActivo()));
+        when(vehiculoDao.buscarPorId(3L)).thenReturn(Optional.of(vehiculoDisponible()));
+        when(asignacionRutaDao.existeRutaActiva(eq(1L), any())).thenReturn(true);
+
+        assertThatThrownBy(() -> asignacionRutaService.registrar(formValido()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("asignacion activa");
+    }
+
+    @Test
     void cambiarEstadoFinalizadaDebeSincronizarRutaYLiberarVehiculo() {
         AsignacionRuta asignacion = asignacionExistente();
         when(asignacionRutaDao.buscarPorId(10L)).thenReturn(Optional.of(asignacion));
@@ -128,6 +140,21 @@ class AsignacionRutaServiceImplTest {
 
         assertThat(asignacion.getEstado()).isEqualTo(EstadoRuta.FINALIZADA);
         assertThat(asignacion.getRuta().getEstado()).isEqualTo(EstadoRuta.FINALIZADA);
+        assertThat(asignacion.getVehiculo().getEstado()).isEqualTo(EstadoVehiculo.DISPONIBLE);
+        verify(asignacionRutaDao).guardar(asignacion);
+        verify(rutaDao).guardar(asignacion.getRuta());
+        verify(vehiculoDao).guardar(asignacion.getVehiculo());
+    }
+
+    @Test
+    void cambiarEstadoCanceladaDebeSincronizarRutaYLiberarVehiculo() {
+        AsignacionRuta asignacion = asignacionExistente();
+        when(asignacionRutaDao.buscarPorId(10L)).thenReturn(Optional.of(asignacion));
+
+        asignacionRutaService.cambiarEstado(10L, EstadoRuta.CANCELADA);
+
+        assertThat(asignacion.getEstado()).isEqualTo(EstadoRuta.CANCELADA);
+        assertThat(asignacion.getRuta().getEstado()).isEqualTo(EstadoRuta.CANCELADA);
         assertThat(asignacion.getVehiculo().getEstado()).isEqualTo(EstadoVehiculo.DISPONIBLE);
         verify(asignacionRutaDao).guardar(asignacion);
         verify(rutaDao).guardar(asignacion.getRuta());

@@ -73,6 +73,17 @@ class RecorridoGpsServiceImplTest {
     }
 
     @Test
+    void registrarDebeRechazarLongitudFueraDeRango() {
+        when(asignacionRutaDao.buscarPorId(1L)).thenReturn(Optional.of(asignacion(EstadoRuta.EN_CURSO)));
+        RecorridoGpsFormDto form = formValido();
+        form.setLongitud(new BigDecimal("-190"));
+
+        assertThatThrownBy(() -> recorridoGpsService.registrar(form))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("longitud");
+    }
+
+    @Test
     void registrarDebeRechazarAsignacionCerrada() {
         when(asignacionRutaDao.buscarPorId(1L)).thenReturn(Optional.of(asignacion(EstadoRuta.FINALIZADA)));
 
