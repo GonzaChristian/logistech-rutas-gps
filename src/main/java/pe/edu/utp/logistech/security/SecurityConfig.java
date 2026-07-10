@@ -15,6 +15,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/img/**", "/login").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/info",
+                                "/actuator/metrics", "/actuator/metrics/**",
+                                "/actuator/prometheus").permitAll()
                         .requestMatchers("/dashboard/**", "/conductores/**", "/vehiculos/**",
                                 "/rutas/**", "/asignaciones/**", "/recorridos/**",
                                 "/incidencias/**", "/reportes/**").hasAnyRole("ADMIN", "SUPERVISOR")
