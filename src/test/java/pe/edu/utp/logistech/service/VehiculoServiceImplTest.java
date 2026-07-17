@@ -3,6 +3,7 @@ package pe.edu.utp.logistech.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pe.edu.utp.logistech.dao.AsignacionRutaDao;
 import pe.edu.utp.logistech.dao.VehiculoDao;
 import pe.edu.utp.logistech.dto.VehiculoFormDto;
 import pe.edu.utp.logistech.entity.Vehiculo;
@@ -26,6 +28,9 @@ class VehiculoServiceImplTest {
 
     @Mock
     private VehiculoDao vehiculoDao;
+
+    @Mock
+    private AsignacionRutaDao asignacionRutaDao;
 
     @InjectMocks
     private VehiculoServiceImpl vehiculoService;
@@ -119,6 +124,18 @@ class VehiculoServiceImplTest {
 
         assertThat(existente.getEstado()).isEqualTo(EstadoVehiculo.MANTENIMIENTO);
         verify(vehiculoDao).guardar(existente);
+    }
+
+    @Test
+    void cambiarEstadoDebeRechazarMantenimientoConRutaActiva() {
+        Vehiculo existente = vehiculoExistente();
+        existente.setEstado(EstadoVehiculo.ASIGNADO);
+        when(vehiculoDao.buscarPorId(1L)).thenReturn(Optional.of(existente));
+        when(asignacionRutaDao.existeVehiculoActivo(eq(1L), any())).thenReturn(true);
+
+        assertThatThrownBy(() -> vehiculoService.cambiarEstado(1L, EstadoVehiculo.MANTENIMIENTO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("asignacion activa");
     }
 
     private VehiculoFormDto formValido() {

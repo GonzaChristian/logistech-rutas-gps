@@ -30,7 +30,7 @@ LOGISTECH es un prototipo web academico desarrollado con Java y Spring Boot. El 
 
 ## Modulos Implementados
 
-- Login con roles `ADMIN` y `SUPERVISOR`.
+- Login con roles diferenciados: `ADMIN` gestiona maestros y asignaciones; `SUPERVISOR` consulta y registra el control operativo.
 - Dashboard con indicadores principales.
 - CRUD de conductores.
 - CRUD de vehiculos.
@@ -113,6 +113,9 @@ Si solo necesitas revisar la aplicacion sin conectar MySQL:
 mvn spring-boot:run "-Dspring-boot.run.profiles=demo"
 ```
 
+Este perfil carga automaticamente un escenario completo en memoria con conductores, vehiculos, rutas,
+asignaciones, recorridos GPS e incidencias. Los datos se regeneran en cada inicio y no modifican MySQL.
+
 ## Usuarios Demo
 
 Usuarios solo para entorno academico/local:
@@ -121,6 +124,18 @@ Usuarios solo para entorno academico/local:
 - Supervisor: `supervisor@logistech.local` / `supervisor123`
 
 Las contrasenas se almacenan cifradas con BCrypt.
+
+Permisos principales:
+
+- `ADMIN`: registra y modifica conductores, vehiculos, rutas y asignaciones; tambien accede al control operativo y reportes.
+- `SUPERVISOR`: consulta los modulos, registra GPS e incidencias y exporta reportes, sin modificar los datos maestros ni las asignaciones.
+
+Reglas de integridad operativa:
+
+- Una asignacion sigue el flujo `PROGRAMADA -> EN_CURSO -> FINALIZADA`, con cancelacion permitida mientras este activa.
+- Las asignaciones `FINALIZADA` o `CANCELADA` no pueden reactivarse.
+- No se puede inactivar un conductor ni cambiar un vehiculo asignado mientras tengan una ruta activa.
+- El estado de la ruta se sincroniza exclusivamente desde su asignacion.
 
 ## Pruebas
 
@@ -139,7 +154,7 @@ $env:MAVEN_OPTS="-Djavax.net.ssl.trustStoreType=Windows-ROOT"
 Ultima verificacion del avance:
 
 ```text
-Tests run: 43, Failures: 0, Errors: 0
+Tests run: 84, Failures: 0, Errors: 0
 ```
 
 ## Git y GitHub

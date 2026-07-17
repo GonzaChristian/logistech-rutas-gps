@@ -134,6 +134,8 @@ class AsignacionRutaServiceImplTest {
     @Test
     void cambiarEstadoFinalizadaDebeSincronizarRutaYLiberarVehiculo() {
         AsignacionRuta asignacion = asignacionExistente();
+        asignacion.setEstado(EstadoRuta.EN_CURSO);
+        asignacion.getRuta().setEstado(EstadoRuta.EN_CURSO);
         when(asignacionRutaDao.buscarPorId(10L)).thenReturn(Optional.of(asignacion));
 
         asignacionRutaService.cambiarEstado(10L, EstadoRuta.FINALIZADA);
@@ -144,6 +146,28 @@ class AsignacionRutaServiceImplTest {
         verify(asignacionRutaDao).guardar(asignacion);
         verify(rutaDao).guardar(asignacion.getRuta());
         verify(vehiculoDao).guardar(asignacion.getVehiculo());
+    }
+
+    @Test
+    void cambiarEstadoDebeRechazarSaltarDeProgramadaAFinalizada() {
+        AsignacionRuta asignacion = asignacionExistente();
+        when(asignacionRutaDao.buscarPorId(10L)).thenReturn(Optional.of(asignacion));
+
+        assertThatThrownBy(() -> asignacionRutaService.cambiarEstado(10L, EstadoRuta.FINALIZADA))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("No se puede cambiar");
+    }
+
+    @Test
+    void cambiarEstadoDebeRechazarReactivarAsignacionCerrada() {
+        AsignacionRuta asignacion = asignacionExistente();
+        asignacion.setEstado(EstadoRuta.CANCELADA);
+        asignacion.getRuta().setEstado(EstadoRuta.CANCELADA);
+        when(asignacionRutaDao.buscarPorId(10L)).thenReturn(Optional.of(asignacion));
+
+        assertThatThrownBy(() -> asignacionRutaService.cambiarEstado(10L, EstadoRuta.EN_CURSO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("No se puede cambiar");
     }
 
     @Test

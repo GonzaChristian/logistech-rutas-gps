@@ -12,7 +12,7 @@
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-        <section class="panel-card form-panel">
+        <section class="panel-card form-panel" th:if="${rolSesion == 'ADMIN'}">
             <div class="panel-heading">
                 <h3 th:text="${rutaForm.idRuta == null ? 'Registrar nueva ruta' : 'Editar ruta'}">
                     Registrar nueva ruta
@@ -40,16 +40,6 @@
                     <div class="col-md-6">
                         <label for="fechaProgramada" class="form-label">Fecha programada</label>
                         <input id="fechaProgramada" type="date" class="form-control" th:field="*{fechaProgramada}">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="estado" class="form-label">Estado</label>
-                        <select id="estado" class="form-select" th:field="*{estado}">
-                            <option th:each="estadoItem : ${estados}"
-                                    th:value="${estadoItem}"
-                                    th:text="${estadoItem}">
-                                PROGRAMADA
-                            </option>
-                        </select>
                     </div>
                 </div>
 
@@ -98,9 +88,12 @@
                             </span>
                         </td>
                         <td>
-                            <a th:href="@{/rutas/{id}/editar(id=${ruta.idRuta})}" class="btn btn-outline-primary btn-sm">
+                            <a th:if="${rolSesion == 'ADMIN' and ruta.estado.name() == 'PROGRAMADA'}"
+                               th:href="@{/rutas/{id}/editar(id=${ruta.idRuta})}" class="btn btn-outline-primary btn-sm">
                                 Editar
                             </a>
+                            <span th:unless="${rolSesion == 'ADMIN' and ruta.estado.name() == 'PROGRAMADA'}"
+                                  class="text-muted">Solo lectura</span>
                         </td>
                     </tr>
                     </tbody>

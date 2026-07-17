@@ -2,6 +2,7 @@ package pe.edu.utp.logistech.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,10 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/img/**", "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/conductores/**", "/vehiculos/**",
+                                "/rutas/**", "/asignaciones/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/conductores/*/editar", "/vehiculos/*/editar",
+                                "/rutas/*/editar").hasRole("ADMIN")
                         .requestMatchers("/dashboard/**", "/conductores/**", "/vehiculos/**",
                                 "/rutas/**", "/asignaciones/**", "/recorridos/**",
                                 "/incidencias/**", "/reportes/**").hasAnyRole("ADMIN", "SUPERVISOR")

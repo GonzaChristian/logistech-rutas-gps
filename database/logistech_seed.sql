@@ -11,7 +11,6 @@ USE logistech_rutas;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS reportes;
 DROP TABLE IF EXISTS incidencias;
 DROP TABLE IF EXISTS recorridos_gps;
 DROP TABLE IF EXISTS asignaciones_ruta;
@@ -108,18 +107,6 @@ CREATE TABLE incidencias (
     FOREIGN KEY (id_asignacion) REFERENCES asignaciones_ruta (id_asignacion)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE reportes (
-  id_reporte BIGINT NOT NULL AUTO_INCREMENT,
-  id_asignacion BIGINT NOT NULL,
-  fecha_generacion DATE NOT NULL,
-  descripcion VARCHAR(250) NULL,
-  estado VARCHAR(20) NOT NULL,
-  PRIMARY KEY (id_reporte),
-  KEY idx_reportes_asignacion (id_asignacion),
-  CONSTRAINT fk_reporte_asignacion
-    FOREIGN KEY (id_asignacion) REFERENCES asignaciones_ruta (id_asignacion)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 INSERT INTO usuarios (id_usuario, nombre, correo, contrasena, rol, estado) VALUES
 (1, 'Administrador LOGISTECH', 'admin@logistech.local', '$2a$10$Wn60UE1Y3RVwhW62o7Spb.MH/6xGqNHYTRJQI/da/UQkxu6bZGb0y', 'ADMIN', 'ACTIVO'),
 (2, 'Supervisor Logistico', 'supervisor@logistech.local', '$2a$10$xmU34/I2uRohKG6ueWl6bOQXtAZAL5nzvkMYADOMZjs3CIoMxQyHy', 'SUPERVISOR', 'ACTIVO');
@@ -165,9 +152,4 @@ INSERT INTO incidencias (id_incidencia, id_asignacion, tipo, descripcion, fecha_
 (1, 1, 'TRAFICO', 'Congestion vehicular en ruta principal. Se registra demora estimada de 20 minutos.', '2026-06-12 08:42:00.000000', 'PENDIENTE'),
 (2, 3, 'ENTREGA', 'Entrega completada con observacion de recepcion parcial.', '2026-06-10 10:30:00.000000', 'RESUELTA'),
 (3, 4, 'OPERATIVA', 'Ruta cancelada por reprogramacion de tienda destino.', '2026-06-11 07:45:00.000000', 'EN_REVISION');
-
-INSERT INTO reportes (id_reporte, id_asignacion, fecha_generacion, descripcion, estado) VALUES
-(1, 1, '2026-06-12', 'Reporte preliminar de ruta en curso con puntos GPS registrados.', 'ACTIVO'),
-(2, 3, '2026-06-10', 'Reporte de ruta finalizada con trazabilidad completa.', 'ACTIVO'),
-(3, 4, '2026-06-11', 'Reporte de ruta cancelada por reprogramacion operativa.', 'ACTIVO');
 

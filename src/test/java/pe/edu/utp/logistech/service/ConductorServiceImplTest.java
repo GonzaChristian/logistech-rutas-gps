@@ -3,6 +3,7 @@ package pe.edu.utp.logistech.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,6 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pe.edu.utp.logistech.dao.AsignacionRutaDao;
 import pe.edu.utp.logistech.dao.ConductorDao;
 import pe.edu.utp.logistech.dto.ConductorFormDto;
 import pe.edu.utp.logistech.entity.Conductor;
@@ -25,6 +27,9 @@ class ConductorServiceImplTest {
 
     @Mock
     private ConductorDao conductorDao;
+
+    @Mock
+    private AsignacionRutaDao asignacionRutaDao;
 
     @InjectMocks
     private ConductorServiceImpl conductorService;
@@ -102,6 +107,17 @@ class ConductorServiceImplTest {
 
         assertThat(existente.getEstado()).isEqualTo(EstadoGeneral.INACTIVO);
         verify(conductorDao).guardar(existente);
+    }
+
+    @Test
+    void cambiarEstadoDebeRechazarInactivarConductorConRutaActiva() {
+        Conductor existente = conductorExistente();
+        when(conductorDao.buscarPorId(1L)).thenReturn(Optional.of(existente));
+        when(asignacionRutaDao.existeConductorActivo(eq(1L), any())).thenReturn(true);
+
+        assertThatThrownBy(() -> conductorService.cambiarEstado(1L, EstadoGeneral.INACTIVO))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("asignacion activa");
     }
 
     private ConductorFormDto formValido() {

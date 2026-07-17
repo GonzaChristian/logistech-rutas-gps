@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.logistech.dao.VehiculoDao;
+import pe.edu.utp.logistech.dao.AsignacionRutaDao;
 import pe.edu.utp.logistech.dto.VehiculoFormDto;
 import pe.edu.utp.logistech.entity.Vehiculo;
 import pe.edu.utp.logistech.entity.enums.EstadoVehiculo;
+import pe.edu.utp.logistech.entity.enums.EstadoRuta;
 import pe.edu.utp.logistech.exception.LogistechException;
 import pe.edu.utp.logistech.service.VehiculoService;
 
@@ -25,11 +27,17 @@ public class VehiculoServiceImpl implements VehiculoService {
             EstadoVehiculo.MANTENIMIENTO,
             EstadoVehiculo.INACTIVO
     );
+    private static final List<EstadoRuta> ESTADOS_ACTIVOS = ImmutableList.of(
+            EstadoRuta.PROGRAMADA,
+            EstadoRuta.EN_CURSO
+    );
 
     private final VehiculoDao vehiculoDao;
+    private final AsignacionRutaDao asignacionRutaDao;
 
-    public VehiculoServiceImpl(VehiculoDao vehiculoDao) {
+    public VehiculoServiceImpl(VehiculoDao vehiculoDao, AsignacionRutaDao asignacionRutaDao) {
         this.vehiculoDao = vehiculoDao;
+        this.asignacionRutaDao = asignacionRutaDao;
     }
 
     @Override
@@ -58,6 +66,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     @Override
     public Vehiculo actualizar(Long idVehiculo, VehiculoFormDto form) {
         Vehiculo vehiculo = obtenerVehiculo(idVehiculo);
+        validarVehiculoSinAsignacionActiva(idVehiculo);
         aplicarFormulario(vehiculo, form);
         Preconditions.checkArgument(
                 !vehiculoDao.existePlacaEnOtroVehiculo(vehiculo.getPlaca(), idVehiculo),
@@ -72,6 +81,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     public void cambiarEstado(Long idVehiculo, EstadoVehiculo estado) {
         validarEstadoGestion(estado);
         Vehiculo vehiculo = obtenerVehiculo(idVehiculo);
+        validarVehiculoSinAsignacionActiva(idVehiculo);
         vehiculo.setEstado(estado);
         vehiculoDao.guardar(vehiculo);
         LOGGER.info("Estado de vehiculo {} cambiado a {}", idVehiculo, estado);
@@ -126,5 +136,12 @@ public class VehiculoServiceImpl implements VehiculoService {
     private String validarTexto(String valor, String campo) {
         Preconditions.checkArgument(StringUtils.isNotBlank(valor), "%s es obligatorio", campo);
         return StringUtils.trim(valor);
+    }
+
+    private void validarVehiculoSinAsignacionActiva(Long idVehiculo) {
+        Preconditions.checkArgument(
+                !asignacionRutaDao.existeVehiculoActivo(idVehiculo, ESTADOS_ACTIVOS),
+                "No se puede modificar un vehiculo con una asignacion activa"
+        );
     }
 }

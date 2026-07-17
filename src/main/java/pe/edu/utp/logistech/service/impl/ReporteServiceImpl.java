@@ -61,12 +61,6 @@ public class ReporteServiceImpl implements ReporteService {
         return conductorDao.listarTodos();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public long contarReportes() {
-        return reporteDao.contar();
-    }
-
     private void validarRangoFechas(ReporteFiltroDto filtro) {
         LocalDate inicio = filtro.getFechaInicio();
         LocalDate fin = filtro.getFechaFin();

@@ -1,6 +1,7 @@
 package pe.edu.utp.logistech.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -8,9 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.logistech.dao.ConductorDao;
+import pe.edu.utp.logistech.dao.AsignacionRutaDao;
 import pe.edu.utp.logistech.dto.ConductorFormDto;
 import pe.edu.utp.logistech.entity.Conductor;
 import pe.edu.utp.logistech.entity.enums.EstadoGeneral;
+import pe.edu.utp.logistech.entity.enums.EstadoRuta;
 import pe.edu.utp.logistech.exception.LogistechException;
 import pe.edu.utp.logistech.service.ConductorService;
 
@@ -19,11 +22,17 @@ import pe.edu.utp.logistech.service.ConductorService;
 public class ConductorServiceImpl implements ConductorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConductorServiceImpl.class);
+    private static final List<EstadoRuta> ESTADOS_ACTIVOS = ImmutableList.of(
+            EstadoRuta.PROGRAMADA,
+            EstadoRuta.EN_CURSO
+    );
 
     private final ConductorDao conductorDao;
+    private final AsignacionRutaDao asignacionRutaDao;
 
-    public ConductorServiceImpl(ConductorDao conductorDao) {
+    public ConductorServiceImpl(ConductorDao conductorDao, AsignacionRutaDao asignacionRutaDao) {
         this.conductorDao = conductorDao;
+        this.asignacionRutaDao = asignacionRutaDao;
     }
 
     @Override
@@ -52,6 +61,7 @@ public class ConductorServiceImpl implements ConductorService {
     @Override
     public Conductor actualizar(Long idConductor, ConductorFormDto form) {
         Conductor conductor = obtenerConductor(idConductor);
+        validarCambioEstadoConAsignacionActiva(idConductor, form == null ? null : form.getEstado());
         aplicarFormulario(conductor, form);
         Preconditions.checkArgument(
                 !conductorDao.existeDniEnOtroConductor(conductor.getDni(), idConductor),
@@ -66,6 +76,7 @@ public class ConductorServiceImpl implements ConductorService {
     public void cambiarEstado(Long idConductor, EstadoGeneral estado) {
         Preconditions.checkArgument(estado != null, "El estado es obligatorio");
         Conductor conductor = obtenerConductor(idConductor);
+        validarCambioEstadoConAsignacionActiva(idConductor, estado);
         conductor.setEstado(estado);
         conductorDao.guardar(conductor);
         LOGGER.info("Estado de conductor {} cambiado a {}", idConductor, estado);
@@ -110,5 +121,14 @@ public class ConductorServiceImpl implements ConductorService {
     private String validarTexto(String valor, String campo) {
         Preconditions.checkArgument(StringUtils.isNotBlank(valor), "%s es obligatorio", campo);
         return StringUtils.trim(valor);
+    }
+
+    private void validarCambioEstadoConAsignacionActiva(Long idConductor, EstadoGeneral estadoSolicitado) {
+        if (estadoSolicitado == EstadoGeneral.INACTIVO) {
+            Preconditions.checkArgument(
+                    !asignacionRutaDao.existeConductorActivo(idConductor, ESTADOS_ACTIVOS),
+                    "No se puede desactivar un conductor con una asignacion activa"
+            );
+        }
     }
 }
