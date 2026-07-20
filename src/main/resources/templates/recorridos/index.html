@@ -5,8 +5,14 @@
 <div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
     <main class="content-wrapper">
         <section class="page-heading">
-            <h2>GPS simulado</h2>
-            <p>Control de recorrido, coordenadas e incidencias</p>
+            <div>
+                <span class="page-kicker"><i class="bi bi-crosshair"></i> Centro de seguimiento</span>
+                <h2>Monitoreo GPS</h2>
+                <p>Registra coordenadas y eventos asociados a recorridos activos.</p>
+            </div>
+            <div class="heading-actions">
+                <a th:href="@{/incidencias}" class="btn btn-outline-secondary"><i class="bi bi-exclamation-triangle"></i> Ver incidencias</a>
+            </div>
         </section>
 
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
@@ -15,8 +21,8 @@
         <div class="control-grid">
             <section class="panel-card form-panel">
                 <div class="panel-heading">
-                    <h3>Registrar posicion GPS</h3>
-                    <span th:text="${#lists.size(asignacionesControl)} + ' asignaciones activas'">0 asignaciones activas</span>
+                    <div><h3>Registrar posición GPS</h3><span>Coordenadas del último punto reportado</span></div>
+                    <span class="record-count" th:text="${#lists.size(asignacionesControl)} + ' activas'">0 activas</span>
                 </div>
 
                 <form method="post" th:object="${gpsForm}" th:action="@{/recorridos/gps}">
@@ -47,16 +53,16 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Registrar GPS</button>
-                        <a th:href="@{/recorridos}" class="btn btn-outline-secondary">Limpiar</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-geo-alt"></i> Registrar posición</button>
+                        <a th:href="@{/recorridos}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Limpiar</a>
                     </div>
                 </form>
             </section>
 
             <section class="panel-card form-panel">
                 <div class="panel-heading">
-                    <h3>Registrar incidencia</h3>
-                    <span th:text="${#lists.size(incidencias)} + ' incidencias'">0 incidencias</span>
+                    <div><h3>Registrar incidencia</h3><span>Notifica un evento durante el trayecto</span></div>
+                    <span class="record-count" th:text="${#lists.size(incidencias)} + ' incidencias'">0 incidencias</span>
                 </div>
 
                 <form method="post" th:object="${incidenciaForm}" th:action="@{/recorridos/incidencias}">
@@ -93,8 +99,8 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Registrar incidencia</button>
-                        <a th:href="@{/recorridos}" class="btn btn-outline-secondary">Limpiar</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-exclamation-diamond"></i> Registrar incidencia</button>
+                        <a th:href="@{/recorridos}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Limpiar</a>
                     </div>
                 </form>
             </section>
@@ -102,8 +108,8 @@
 
         <section class="panel-card table-panel gps-table">
             <div class="panel-heading">
-                <h3>Historial GPS</h3>
-                <span th:text="${#lists.size(registrosGps)} + ' registros'">0 registros</span>
+                <div><h3>Historial de posiciones</h3><span>Trazabilidad cronológica de coordenadas</span></div>
+                <span class="record-count" th:text="${#lists.size(registrosGps)} + ' registros'">0 registros</span>
             </div>
 
             <div class="table-responsive">
@@ -137,8 +143,8 @@
 
         <section class="panel-card table-panel">
             <div class="panel-heading">
-                <h3>Incidencias recientes</h3>
-                <a th:href="@{/incidencias}" class="btn btn-outline-primary btn-sm">Ver incidencias</a>
+                <div><h3>Incidencias recientes</h3><span>Eventos reportados en los recorridos</span></div>
+                <a th:href="@{/incidencias}" class="btn btn-outline-primary btn-sm">Ver todas <i class="bi bi-arrow-right"></i></a>
             </div>
 
             <div class="table-responsive">

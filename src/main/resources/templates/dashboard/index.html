@@ -5,72 +5,91 @@
 <div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
     <main class="content-wrapper">
         <section class="page-heading">
-            <h2>Panel principal</h2>
-            <p>
-                Bienvenido,
-                <span th:text="${usuarioSesion ?: 'usuario'}">usuario</span>
-            </p>
+            <div>
+                <span class="page-kicker"><i class="bi bi-grid-1x2-fill"></i> Resumen operativo</span>
+                <h2>Panel principal</h2>
+                <p>Visión general de la operación logística y sus indicadores clave.</p>
+            </div>
+            <div class="heading-actions">
+                <a th:href="@{/reportes}" class="btn btn-outline-secondary"><i class="bi bi-bar-chart-line"></i> Ver reportes</a>
+                <a th:href="@{/recorridos}" class="btn btn-primary"><i class="bi bi-crosshair"></i> Monitorear rutas</a>
+            </div>
         </section>
 
-        <section class="metric-grid">
-            <article class="metric-card">
-                <span class="metric-icon">RU</span>
+        <section class="metric-grid" aria-label="Indicadores operativos">
+            <article class="metric-card metric-info">
+                <span class="metric-icon"><i class="bi bi-signpost-split"></i></span>
                 <p>Rutas registradas</p>
                 <strong th:text="${resumen.rutasRegistradas()}">0</strong>
+                <small>Total</small>
             </article>
-            <article class="metric-card">
-                <span class="metric-icon">EC</span>
+            <article class="metric-card metric-warning">
+                <span class="metric-icon"><i class="bi bi-truck"></i></span>
                 <p>Rutas en curso</p>
                 <strong th:text="${resumen.rutasEnCurso()}">0</strong>
+                <small>Activas</small>
             </article>
-            <article class="metric-card">
-                <span class="metric-icon">IC</span>
+            <article class="metric-card metric-danger">
+                <span class="metric-icon"><i class="bi bi-exclamation-triangle"></i></span>
                 <p>Incidencias registradas</p>
                 <strong th:text="${resumen.incidenciasRegistradas()}">0</strong>
+                <small>Eventos</small>
             </article>
-            <article class="metric-card">
-                <span class="metric-icon">OK</span>
+            <article class="metric-card metric-success">
+                <span class="metric-icon"><i class="bi bi-check2-circle"></i></span>
                 <p>Rutas finalizadas</p>
                 <strong th:text="${resumen.rutasFinalizadas()}">0</strong>
+                <small>Completadas</small>
             </article>
         </section>
 
-        <section class="panel-card">
+        <section class="dashboard-grid">
+            <article class="operations-card">
+                <div class="operations-copy">
+                    <span class="operations-label"><span class="live-dot"></span> Seguimiento operativo</span>
+                    <h3>Control de recorridos GPS</h3>
+                    <p>Registra nuevas coordenadas y consulta la trazabilidad de las unidades asignadas.</p>
+                    <a th:href="@{/recorridos}" class="btn btn-light">Abrir centro de monitoreo <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="gps-counter">
+                    <span><i class="bi bi-broadcast-pin"></i></span>
+                    <strong th:text="${resumen.gpsRegistrados()}">0</strong>
+                    <small>POSICIONES GPS</small>
+                </div>
+            </article>
+
+            <article class="panel-card quick-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3>Accesos rápidos</h3>
+                        <span>Herramientas frecuentes</span>
+                    </div>
+                    <span class="heading-icon"><i class="bi bi-lightning-charge"></i></span>
+                </div>
+                <div class="quick-actions">
+                    <a th:href="@{/asignaciones}"><i class="bi bi-calendar2-check"></i><span><strong>Asignar ruta</strong><small>Conductor y vehículo</small></span><i class="bi bi-chevron-right"></i></a>
+                    <a th:href="@{/incidencias}"><i class="bi bi-exclamation-diamond"></i><span><strong>Registrar incidencia</strong><small>Control de eventos</small></span><i class="bi bi-chevron-right"></i></a>
+                    <a th:href="@{/reportes}"><i class="bi bi-file-earmark-spreadsheet"></i><span><strong>Exportar reporte</strong><small>Información operativa</small></span><i class="bi bi-chevron-right"></i></a>
+                </div>
+            </article>
+        </section>
+
+        <section class="panel-card process-panel">
             <div class="panel-heading">
-                <h3>Ultimas rutas asignadas</h3>
-                <span>Vista base para el avance APF3</span>
+                <div>
+                    <h3>Flujo de operación</h3>
+                    <span>Ciclo estándar de una ruta en LOGISTECH</span>
+                </div>
+                <span class="heading-icon"><i class="bi bi-diagram-3"></i></span>
             </div>
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead>
-                    <tr>
-                        <th>Ruta</th>
-                        <th>Conductor</th>
-                        <th>Vehiculo</th>
-                        <th>Estado</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>R001</td>
-                        <td>Juan Perez</td>
-                        <td>ABC-123</td>
-                        <td><span class="status status-info">En curso</span></td>
-                    </tr>
-                    <tr>
-                        <td>R002</td>
-                        <td>Luis Torres</td>
-                        <td>BCD-456</td>
-                        <td><span class="status status-warning">Pendiente</span></td>
-                    </tr>
-                    <tr>
-                        <td>R003</td>
-                        <td>Carlos Diaz</td>
-                        <td>CDE-789</td>
-                        <td><span class="status status-success">Finalizada</span></td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="process-flow">
+                <div><span><i class="bi bi-signpost-split"></i></span><strong>1. Crear ruta</strong><small>Define origen, destino y fecha.</small></div>
+                <i class="bi bi-arrow-right process-arrow"></i>
+                <div><span><i class="bi bi-person-check"></i></span><strong>2. Asignar recursos</strong><small>Vincula conductor y vehículo.</small></div>
+                <i class="bi bi-arrow-right process-arrow"></i>
+                <div><span><i class="bi bi-crosshair"></i></span><strong>3. Monitorear</strong><small>Registra posiciones e incidencias.</small></div>
+                <i class="bi bi-arrow-right process-arrow"></i>
+                <div><span><i class="bi bi-check2-circle"></i></span><strong>4. Finalizar</strong><small>Cierra la ruta y reporta.</small></div>
             </div>
         </section>
     </main>

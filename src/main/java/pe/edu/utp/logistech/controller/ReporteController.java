@@ -61,6 +61,6 @@ public class ReporteController {
         model.addAttribute("conductores", reporteService.listarConductores());
         model.addAttribute("estados", EstadoRuta.values());
         model.addAttribute("activeMenu", "reportes");
-        model.addAttribute("pageTitle", "Reporte de rutas");
+        model.addAttribute("pageTitle", "Reportes de rutas");
     }
 }

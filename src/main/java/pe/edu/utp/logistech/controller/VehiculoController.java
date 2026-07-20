@@ -94,6 +94,6 @@ public class VehiculoController {
         model.addAttribute("vehiculos", vehiculoService.listarVehiculos());
         model.addAttribute("estados", vehiculoService.listarEstadosGestion());
         model.addAttribute("activeMenu", "vehiculos");
-        model.addAttribute("pageTitle", "Gestion de vehiculos");
+        model.addAttribute("pageTitle", "Gestión de vehículos");
     }
 }

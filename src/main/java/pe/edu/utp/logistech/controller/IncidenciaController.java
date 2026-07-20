@@ -53,6 +53,6 @@ public class IncidenciaController {
         model.addAttribute("incidencias", incidenciaService.listarIncidencias());
         model.addAttribute("tiposIncidencia", incidenciaService.listarTiposSugeridos());
         model.addAttribute("activeMenu", "incidencias");
-        model.addAttribute("pageTitle", "Control de incidencias");
+        model.addAttribute("pageTitle", "Gestión de incidencias");
     }
 }

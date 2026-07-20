@@ -5,8 +5,11 @@
 <div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
     <main class="content-wrapper">
         <section class="page-heading">
-            <h2>Gestion de rutas</h2>
-            <p>Registro y programacion de rutas retail</p>
+            <div>
+                <span class="page-kicker"><i class="bi bi-signpost-split"></i> Planificación logística</span>
+                <h2>Rutas</h2>
+                <p>Planifica trayectos entre centros de distribución y puntos de entrega.</p>
+            </div>
         </section>
 
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
@@ -14,11 +17,12 @@
 
         <section class="panel-card form-panel" th:if="${rolSesion == 'ADMIN'}">
             <div class="panel-heading">
-                <h3 th:text="${rutaForm.idRuta == null ? 'Registrar nueva ruta' : 'Editar ruta'}">
-                    Registrar nueva ruta
-                </h3>
+                <div>
+                    <h3 th:text="${rutaForm.idRuta == null ? 'Registrar nueva ruta' : 'Editar ruta'}">Registrar nueva ruta</h3>
+                    <span>Origen, destino y fecha programada</span>
+                </div>
                 <a th:if="${rutaForm.idRuta != null}" th:href="@{/rutas}" class="btn btn-outline-secondary btn-sm">
-                    Cancelar edicion
+                    <i class="bi bi-x-lg"></i> Cancelar edición
                 </a>
             </div>
 
@@ -45,19 +49,20 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check2-circle"></i>
                         <span th:text="${rutaForm.idRuta == null ? 'Registrar ruta' : 'Guardar cambios'}">
                             Registrar ruta
                         </span>
                     </button>
-                    <a th:href="@{/rutas}" class="btn btn-outline-secondary">Limpiar</a>
+                    <a th:href="@{/rutas}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Limpiar</a>
                 </div>
             </form>
         </section>
 
         <section class="panel-card table-panel route-table">
             <div class="panel-heading">
-                <h3>Rutas registradas</h3>
-                <span th:text="${#lists.size(rutas)} + ' registros'">0 registros</span>
+                <div><h3>Programación de rutas</h3><span>Trayectos registrados y estado operativo</span></div>
+                <span class="record-count" th:text="${#lists.size(rutas)} + ' registros'">0 registros</span>
             </div>
 
             <div class="table-responsive">
@@ -90,7 +95,7 @@
                         <td>
                             <a th:if="${rolSesion == 'ADMIN' and ruta.estado.name() == 'PROGRAMADA'}"
                                th:href="@{/rutas/{id}/editar(id=${ruta.idRuta})}" class="btn btn-outline-primary btn-sm">
-                                Editar
+                                <i class="bi bi-pencil"></i> Editar
                             </a>
                             <span th:unless="${rolSesion == 'ADMIN' and ruta.estado.name() == 'PROGRAMADA'}"
                                   class="text-muted">Solo lectura</span>

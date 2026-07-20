@@ -5,16 +5,19 @@
 <div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
     <main class="content-wrapper">
         <section class="page-heading">
-            <h2>Reporte de rutas</h2>
-            <p>Consulta operativa por estado, conductor y fecha programada</p>
+            <div>
+                <span class="page-kicker"><i class="bi bi-bar-chart-line"></i> Inteligencia operativa</span>
+                <h2>Reportes de rutas</h2>
+                <p>Consulta el desempeño por estado, conductor y periodo programado.</p>
+            </div>
         </section>
 
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
         <section class="panel-card form-panel">
             <div class="panel-heading">
-                <h3>Filtros de busqueda</h3>
-                <span th:text="${#lists.size(filas)} + ' resultados'">0 resultados</span>
+                <div><h3>Filtros de búsqueda</h3><span>Refina la información del reporte</span></div>
+                <span class="record-count" th:text="${#lists.size(filas)} + ' resultados'">0 resultados</span>
             </div>
 
             <form method="get" th:object="${filtro}" th:action="@{/reportes}">
@@ -52,11 +55,11 @@
                 </div>
 
                 <div class="form-actions report-actions">
-                    <button type="submit" class="btn btn-primary">Aplicar filtros</button>
-                    <a th:href="@{/reportes}" class="btn btn-outline-secondary">Limpiar</a>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Aplicar filtros</button>
+                    <a th:href="@{/reportes}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Limpiar</a>
                     <a class="btn btn-outline-success"
                        th:href="@{/reportes/exportar(estado=${filtro.estado}, idConductor=${filtro.idConductor}, fechaInicio=${filtro.fechaInicio}, fechaFin=${filtro.fechaFin})}">
-                        Exportar Excel
+                        <i class="bi bi-file-earmark-spreadsheet"></i> Exportar Excel
                     </a>
                 </div>
             </form>
@@ -64,8 +67,8 @@
 
         <section class="panel-card table-panel report-table">
             <div class="panel-heading">
-                <h3>Resultados</h3>
-                <span th:text="${#lists.size(filas)} + ' rutas'">0 rutas</span>
+                <div><h3>Resultados del reporte</h3><span>Detalle consolidado de asignaciones y recursos</span></div>
+                <span class="record-count" th:text="${#lists.size(filas)} + ' rutas'">0 rutas</span>
             </div>
 
             <div class="table-responsive">

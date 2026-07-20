@@ -68,6 +68,6 @@ public class AsignacionRutaController {
         model.addAttribute("vehiculosDisponibles", asignacionRutaService.listarVehiculosDisponibles());
         model.addAttribute("estados", asignacionRutaService.listarEstadosGestion());
         model.addAttribute("activeMenu", "asignaciones");
-        model.addAttribute("pageTitle", "Asignacion de rutas");
+        model.addAttribute("pageTitle", "Asignación de rutas");
     }
 }

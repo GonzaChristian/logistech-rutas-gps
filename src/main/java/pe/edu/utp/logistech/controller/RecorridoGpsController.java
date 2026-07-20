@@ -75,6 +75,6 @@ public class RecorridoGpsController {
         model.addAttribute("incidencias", incidenciaService.listarIncidencias());
         model.addAttribute("tiposIncidencia", incidenciaService.listarTiposSugeridos());
         model.addAttribute("activeMenu", "recorridos");
-        model.addAttribute("pageTitle", "GPS simulado");
+        model.addAttribute("pageTitle", "Monitoreo GPS");
     }
 }

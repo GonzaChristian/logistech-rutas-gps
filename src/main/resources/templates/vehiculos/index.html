@@ -5,8 +5,11 @@
 <div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
     <main class="content-wrapper">
         <section class="page-heading">
-            <h2>Gestion de vehiculos</h2>
-            <p>Registro y control operativo de unidades</p>
+            <div>
+                <span class="page-kicker"><i class="bi bi-truck"></i> Gestión de flota</span>
+                <h2>Vehículos</h2>
+                <p>Administra las unidades y su disponibilidad para la operación.</p>
+            </div>
         </section>
 
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
@@ -14,11 +17,12 @@
 
         <section class="panel-card form-panel" th:if="${rolSesion == 'ADMIN'}">
             <div class="panel-heading">
-                <h3 th:text="${vehiculoForm.idVehiculo == null ? 'Registrar nuevo vehiculo' : 'Editar vehiculo'}">
-                    Registrar nuevo vehiculo
-                </h3>
+                <div>
+                    <h3 th:text="${vehiculoForm.idVehiculo == null ? 'Registrar nuevo vehículo' : 'Editar vehículo'}">Registrar nuevo vehículo</h3>
+                    <span>Identificación y estado operativo de la unidad</span>
+                </div>
                 <a th:if="${vehiculoForm.idVehiculo != null}" th:href="@{/vehiculos}" class="btn btn-outline-secondary btn-sm">
-                    Cancelar edicion
+                    <i class="bi bi-x-lg"></i> Cancelar edición
                 </a>
             </div>
 
@@ -55,19 +59,20 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check2-circle"></i>
                         <span th:text="${vehiculoForm.idVehiculo == null ? 'Registrar vehiculo' : 'Guardar cambios'}">
                             Registrar vehiculo
                         </span>
                     </button>
-                    <a th:href="@{/vehiculos}" class="btn btn-outline-secondary">Limpiar</a>
+                    <a th:href="@{/vehiculos}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Limpiar</a>
                 </div>
             </form>
         </section>
 
         <section class="panel-card table-panel vehicle-table">
             <div class="panel-heading">
-                <h3>Vehiculos registrados</h3>
-                <span th:text="${#lists.size(vehiculos)} + ' registros'">0 registros</span>
+                <div><h3>Inventario de vehículos</h3><span>Estado actual de la flota registrada</span></div>
+                <span class="record-count" th:text="${#lists.size(vehiculos)} + ' registros'">0 registros</span>
             </div>
 
             <div class="table-responsive">
@@ -101,7 +106,7 @@
                             <div class="action-group"
                                  th:if="${rolSesion == 'ADMIN' and vehiculo.estado.name() != 'ASIGNADO'}">
                                 <a th:href="@{/vehiculos/{id}/editar(id=${vehiculo.idVehiculo})}" class="btn btn-outline-primary btn-sm">
-                                    Editar
+                                    <i class="bi bi-pencil"></i> Editar
                                 </a>
                                 <form th:each="estadoDestino : ${estados}"
                                       th:if="${vehiculo.estado.name() != estadoDestino.name()}"

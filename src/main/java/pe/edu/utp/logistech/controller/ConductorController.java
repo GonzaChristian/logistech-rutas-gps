@@ -94,6 +94,6 @@ public class ConductorController {
         model.addAttribute("conductores", conductorService.listarConductores());
         model.addAttribute("estados", EstadoGeneral.values());
         model.addAttribute("activeMenu", "conductores");
-        model.addAttribute("pageTitle", "Gestion de conductores");
+        model.addAttribute("pageTitle", "Gestión de conductores");
     }
 }

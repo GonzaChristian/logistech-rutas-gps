@@ -5,8 +5,11 @@
 <div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
     <main class="content-wrapper">
         <section class="page-heading">
-            <h2>Asignacion de rutas</h2>
-            <p>Programacion de conductor y vehiculo por ruta</p>
+            <div>
+                <span class="page-kicker"><i class="bi bi-calendar2-check"></i> Coordinación de recursos</span>
+                <h2>Asignaciones</h2>
+                <p>Vincula rutas programadas con conductores y vehículos disponibles.</p>
+            </div>
         </section>
 
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
@@ -14,8 +17,8 @@
 
         <section class="panel-card form-panel" th:if="${rolSesion == 'ADMIN'}">
             <div class="panel-heading">
-                <h3>Nueva asignacion</h3>
-                <span th:text="${#lists.size(rutasDisponibles)} + ' rutas disponibles'">0 rutas disponibles</span>
+                <div><h3>Nueva asignación</h3><span>Selecciona los recursos para iniciar la operación</span></div>
+                <span class="record-count" th:text="${#lists.size(rutasDisponibles)} + ' rutas disponibles'">0 rutas disponibles</span>
             </div>
 
             <form method="post" th:object="${asignacionForm}" th:action="@{/asignaciones}">
@@ -58,16 +61,16 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Asignar ruta</button>
-                    <a th:href="@{/asignaciones}" class="btn btn-outline-secondary">Limpiar</a>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-calendar2-check"></i> Asignar ruta</button>
+                    <a th:href="@{/asignaciones}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Limpiar</a>
                 </div>
             </form>
         </section>
 
         <section class="panel-card table-panel assignment-table">
             <div class="panel-heading">
-                <h3>Asignaciones registradas</h3>
-                <span th:text="${#lists.size(asignaciones)} + ' registros'">0 registros</span>
+                <div><h3>Control de asignaciones</h3><span>Seguimiento del ciclo de cada operación</span></div>
+                <span class="record-count" th:text="${#lists.size(asignaciones)} + ' registros'">0 registros</span>
             </div>
 
             <div class="table-responsive">
@@ -106,21 +109,21 @@
                                       method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <input type="hidden" name="estado" value="EN_CURSO">
-                                    <button type="submit" class="btn btn-outline-primary btn-sm">En curso</button>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm"><i class="bi bi-play-fill"></i> Iniciar</button>
                                 </form>
                                 <form th:if="${rolSesion == 'ADMIN' and asignacion.estado.name() == 'EN_CURSO'}"
                                       th:action="@{/asignaciones/{id}/estado(id=${asignacion.idAsignacion})}"
                                       method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <input type="hidden" name="estado" value="FINALIZADA">
-                                    <button type="submit" class="btn btn-outline-success btn-sm">Finalizar</button>
+                                    <button type="submit" class="btn btn-outline-success btn-sm"><i class="bi bi-check2"></i> Finalizar</button>
                                 </form>
                                 <form th:if="${rolSesion == 'ADMIN' and (asignacion.estado.name() == 'PROGRAMADA' or asignacion.estado.name() == 'EN_CURSO')}"
                                       th:action="@{/asignaciones/{id}/estado(id=${asignacion.idAsignacion})}"
                                       method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <input type="hidden" name="estado" value="CANCELADA">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Cancelar</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-x"></i> Cancelar</button>
                                 </form>
                                 <span th:if="${asignacion.estado.name() == 'FINALIZADA' or asignacion.estado.name() == 'CANCELADA'}"
                                       class="text-muted small">

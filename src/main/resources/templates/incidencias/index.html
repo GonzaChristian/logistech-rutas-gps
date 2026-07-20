@@ -5,8 +5,11 @@
 <div th:replace="~{fragments/layout :: app(${activeMenu}, ${pageTitle}, ~{::main})}">
     <main class="content-wrapper">
         <section class="page-heading">
-            <h2>Control de incidencias</h2>
-            <p>Registro y seguimiento de eventos del recorrido</p>
+            <div>
+                <span class="page-kicker"><i class="bi bi-exclamation-triangle"></i> Gestión de eventos</span>
+                <h2>Incidencias</h2>
+                <p>Registra y consulta eventos que afectan la ejecución de las rutas.</p>
+            </div>
         </section>
 
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
@@ -14,8 +17,8 @@
 
         <section class="panel-card form-panel">
             <div class="panel-heading">
-                <h3>Registrar incidencia</h3>
-                <span th:text="${#lists.size(asignacionesControl)} + ' asignaciones activas'">0 asignaciones activas</span>
+                <div><h3>Nueva incidencia</h3><span>Asocia el evento a una operación activa</span></div>
+                <span class="record-count" th:text="${#lists.size(asignacionesControl)} + ' asignaciones activas'">0 asignaciones activas</span>
             </div>
 
             <form method="post" th:object="${incidenciaForm}" th:action="@{/incidencias}">
@@ -52,16 +55,16 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Registrar incidencia</button>
-                    <a th:href="@{/incidencias}" class="btn btn-outline-secondary">Limpiar</a>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-exclamation-diamond"></i> Registrar incidencia</button>
+                    <a th:href="@{/incidencias}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> Limpiar</a>
                 </div>
             </form>
         </section>
 
         <section class="panel-card table-panel incidence-table">
             <div class="panel-heading">
-                <h3>Incidencias registradas</h3>
-                <span th:text="${#lists.size(incidencias)} + ' registros'">0 registros</span>
+                <div><h3>Registro de incidencias</h3><span>Historial de eventos reportados</span></div>
+                <span class="record-count" th:text="${#lists.size(incidencias)} + ' registros'">0 registros</span>
             </div>
 
             <div class="table-responsive">
