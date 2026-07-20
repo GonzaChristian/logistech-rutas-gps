@@ -77,7 +77,6 @@ public class RutaController {
 
     private void cargarModelo(Model model) {
         model.addAttribute("rutas", rutaService.listarRutas());
-        model.addAttribute("estados", rutaService.listarEstadosGestion());
         model.addAttribute("activeMenu", "rutas");
         model.addAttribute("pageTitle", "Gestion de rutas");
     }

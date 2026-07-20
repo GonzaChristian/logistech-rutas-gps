@@ -12,7 +12,7 @@
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-        <section class="panel-card form-panel">
+        <section class="panel-card form-panel" th:if="${rolSesion == 'ADMIN'}">
             <div class="panel-heading">
                 <h3>Nueva asignacion</h3>
                 <span th:text="${#lists.size(rutasDisponibles)} + ' rutas disponibles'">0 rutas disponibles</span>
@@ -101,21 +101,21 @@
                         </td>
                         <td>
                             <div class="action-group">
-                                <form th:if="${asignacion.estado.name() == 'PROGRAMADA'}"
+                                <form th:if="${rolSesion == 'ADMIN' and asignacion.estado.name() == 'PROGRAMADA'}"
                                       th:action="@{/asignaciones/{id}/estado(id=${asignacion.idAsignacion})}"
                                       method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <input type="hidden" name="estado" value="EN_CURSO">
                                     <button type="submit" class="btn btn-outline-primary btn-sm">En curso</button>
                                 </form>
-                                <form th:if="${asignacion.estado.name() == 'PROGRAMADA' or asignacion.estado.name() == 'EN_CURSO'}"
+                                <form th:if="${rolSesion == 'ADMIN' and asignacion.estado.name() == 'EN_CURSO'}"
                                       th:action="@{/asignaciones/{id}/estado(id=${asignacion.idAsignacion})}"
                                       method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                     <input type="hidden" name="estado" value="FINALIZADA">
                                     <button type="submit" class="btn btn-outline-success btn-sm">Finalizar</button>
                                 </form>
-                                <form th:if="${asignacion.estado.name() == 'PROGRAMADA' or asignacion.estado.name() == 'EN_CURSO'}"
+                                <form th:if="${rolSesion == 'ADMIN' and (asignacion.estado.name() == 'PROGRAMADA' or asignacion.estado.name() == 'EN_CURSO')}"
                                       th:action="@{/asignaciones/{id}/estado(id=${asignacion.idAsignacion})}"
                                       method="post">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -126,6 +126,8 @@
                                       class="text-muted small">
                                     Cerrada
                                 </span>
+                                <span th:if="${rolSesion != 'ADMIN' and (asignacion.estado.name() == 'PROGRAMADA' or asignacion.estado.name() == 'EN_CURSO')}"
+                                      class="text-muted small">Solo lectura</span>
                             </div>
                         </td>
                     </tr>

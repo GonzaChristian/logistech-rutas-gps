@@ -74,6 +74,7 @@ La aplicacion implementa:
 
 - Login en `/login`.
 - Roles `ADMIN` y `SUPERVISOR`.
+- Autorizacion diferenciada: el administrador gestiona maestros y asignaciones; el supervisor realiza consultas, control GPS, incidencias y reportes.
 - Logout seguro.
 - Proteccion CSRF de Spring Security.
 - Contrasenas cifradas con BCrypt.
@@ -116,6 +117,10 @@ No se incluyen contrasenas reales ni datos sensibles.
 - Validacion de conductor activo.
 - Validacion de vehiculo disponible.
 - Liberacion del vehiculo al finalizar o cancelar.
+- Flujo controlado `PROGRAMADA -> EN_CURSO -> FINALIZADA`, con cancelacion durante estados activos.
+- Bloqueo de reactivacion de asignaciones finalizadas o canceladas.
+- Sincronizacion del estado de ruta desde la asignacion.
+- Bloqueo de inactivacion de conductores y cambios de vehiculos con asignacion activa.
 
 ### GPS Simulado E Incidencias
 
@@ -146,12 +151,15 @@ Se implementaron pruebas con JUnit 5 y Mockito para servicios principales:
 - `DashboardServiceImplTest`
 - `LogistechUserDetailsServiceTest`
 - `DataInitializerTest`
+- `DemoDataInitializerTest`
 - `TextValidatorTest`
+- `MvcControllerTest`
+- Pruebas de repositorios JPA con H2.
 
 Resultado de verificacion:
 
 ```text
-Tests run: 43, Failures: 0, Errors: 0
+Tests run: 84, Failures: 0, Errors: 0
 ```
 
 ## Evidencia De SOLID
@@ -190,7 +198,9 @@ El desarrollo de las fases incluyo pruebas unitarias para validar reglas antes d
 - Validaciones obligatorias.
 - Duplicados.
 - Cambios de estado.
+- Transiciones validas e invalidas de asignaciones.
 - Disponibilidad de conductor y vehiculo.
+- Separacion de permisos entre administrador y supervisor.
 - Registro GPS.
 - Registro de incidencias.
 - Filtros de reporte.

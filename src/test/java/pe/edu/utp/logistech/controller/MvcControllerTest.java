@@ -1,6 +1,7 @@
 package pe.edu.utp.logistech.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -194,16 +195,11 @@ class MvcControllerTest {
     @WithMockUser(roles = "ADMIN")
     void rutasIndexDebeMostrarVistaConModelo() throws Exception {
         when(rutaService.listarRutas()).thenReturn(List.of(ruta()));
-        when(rutaService.listarEstadosGestion()).thenReturn(List.of(
-                EstadoRuta.PROGRAMADA,
-                EstadoRuta.EN_CURSO,
-                EstadoRuta.FINALIZADA,
-                EstadoRuta.CANCELADA));
 
         mockMvc.perform(get("/rutas"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("rutas/index"))
-                .andExpect(model().attributeExists("rutaForm", "rutas", "estados"))
+                .andExpect(model().attributeExists("rutaForm", "rutas"))
                 .andExpect(model().attribute("activeMenu", "rutas"));
     }
 
@@ -300,6 +296,38 @@ class MvcControllerTest {
                 .andExpect(redirectedUrl("/recorridos"));
 
         verify(recorridoGpsService).registrar(any(RecorridoGpsFormDto.class));
+    }
+
+    @Test
+    @WithMockUser(roles = "SUPERVISOR")
+    void supervisorPuedeConsultarConductoresPeroNoRegistrarlos() throws Exception {
+        mockMvc.perform(get("/conductores"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/conductores")
+                        .with(csrf())
+                        .param("nombres", "Ana")
+                        .param("apellidos", "Lopez")
+                        .param("dni", "70000001")
+                        .param("licencia", "AII-B")
+                        .param("estado", "ACTIVO"))
+                .andExpect(status().isForbidden());
+
+        verify(conductorService, never()).registrar(any(ConductorFormDto.class));
+    }
+
+    @Test
+    @WithMockUser(roles = "SUPERVISOR")
+    void supervisorPuedeRegistrarControlGps() throws Exception {
+        when(recorridoGpsService.registrar(any(RecorridoGpsFormDto.class))).thenReturn(gps());
+
+        mockMvc.perform(post("/recorridos/gps")
+                        .with(csrf())
+                        .param("idAsignacion", "10")
+                        .param("latitud", "-12.046374")
+                        .param("longitud", "-77.042793"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/recorridos"));
     }
 
     @Test

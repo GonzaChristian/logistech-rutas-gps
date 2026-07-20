@@ -12,7 +12,7 @@
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-        <section class="panel-card form-panel">
+        <section class="panel-card form-panel" th:if="${rolSesion == 'ADMIN'}">
             <div class="panel-heading">
                 <h3 th:text="${conductorForm.idConductor == null ? 'Registrar nuevo conductor' : 'Editar conductor'}">
                     Registrar nuevo conductor
@@ -110,7 +110,7 @@
                             </span>
                         </td>
                         <td>
-                            <div class="action-group">
+                            <div class="action-group" th:if="${rolSesion == 'ADMIN'}">
                                 <a th:href="@{/conductores/{id}/editar(id=${conductor.idConductor})}" class="btn btn-outline-primary btn-sm">
                                     Editar
                                 </a>
@@ -126,6 +126,7 @@
                                     </button>
                                 </form>
                             </div>
+                            <span th:unless="${rolSesion == 'ADMIN'}" class="text-muted">Solo lectura</span>
                         </td>
                     </tr>
                     </tbody>

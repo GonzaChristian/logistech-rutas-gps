@@ -7,5 +7,4 @@ public interface ReporteDao {
 
     List<AsignacionRuta> listarAsignacionesReporte();
 
-    long contar();
 }

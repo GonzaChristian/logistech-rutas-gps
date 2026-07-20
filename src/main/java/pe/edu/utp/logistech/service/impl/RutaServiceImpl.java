@@ -1,7 +1,6 @@
 package pe.edu.utp.logistech.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import java.time.LocalDate;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -21,13 +20,6 @@ import pe.edu.utp.logistech.service.RutaService;
 public class RutaServiceImpl implements RutaService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RutaServiceImpl.class);
-    private static final List<EstadoRuta> ESTADOS_GESTION = ImmutableList.of(
-            EstadoRuta.PROGRAMADA,
-            EstadoRuta.EN_CURSO,
-            EstadoRuta.FINALIZADA,
-            EstadoRuta.CANCELADA
-    );
-
     private final RutaDao rutaDao;
 
     public RutaServiceImpl(RutaDao rutaDao) {
@@ -66,21 +58,6 @@ public class RutaServiceImpl implements RutaService {
     }
 
     @Override
-    public void cambiarEstado(Long idRuta, EstadoRuta estado) {
-        validarEstadoGestion(estado);
-        Ruta ruta = obtenerRuta(idRuta);
-        ruta.setEstado(estado);
-        rutaDao.guardar(ruta);
-        LOGGER.info("Estado de ruta {} cambiado a {}", idRuta, estado);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<EstadoRuta> listarEstadosGestion() {
-        return ESTADOS_GESTION;
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public long contarRutas() {
         return rutaDao.contar();
@@ -98,8 +75,6 @@ public class RutaServiceImpl implements RutaService {
         String origen = validarTexto(form.getOrigen(), "El origen");
         String destino = validarTexto(form.getDestino(), "El destino");
         LocalDate fechaProgramada = form.getFechaProgramada();
-        EstadoRuta estado = form.getEstado() == null ? EstadoRuta.PROGRAMADA : form.getEstado();
-        validarEstadoGestion(estado);
 
         Preconditions.checkArgument(StringUtils.length(origen) <= 150, "El origen no debe superar 150 caracteres");
         Preconditions.checkArgument(StringUtils.length(destino) <= 150, "El destino no debe superar 150 caracteres");
@@ -110,12 +85,9 @@ public class RutaServiceImpl implements RutaService {
         ruta.setOrigen(origen);
         ruta.setDestino(destino);
         ruta.setFechaProgramada(fechaProgramada);
-        ruta.setEstado(estado);
-    }
-
-    private void validarEstadoGestion(EstadoRuta estado) {
-        Preconditions.checkArgument(estado != null, "El estado es obligatorio");
-        Preconditions.checkArgument(ESTADOS_GESTION.contains(estado), "El estado de la ruta no es valido");
+        if (ruta.getIdRuta() == null) {
+            ruta.setEstado(EstadoRuta.PROGRAMADA);
+        }
     }
 
     private String validarTexto(String valor, String campo) {

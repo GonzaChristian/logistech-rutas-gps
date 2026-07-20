@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,12 @@ public class AsignacionRutaServiceImpl implements AsignacionRutaService {
             EstadoRuta.EN_CURSO,
             EstadoRuta.FINALIZADA,
             EstadoRuta.CANCELADA
+    );
+    private static final Map<EstadoRuta, Set<EstadoRuta>> TRANSICIONES_VALIDAS = Map.of(
+            EstadoRuta.PROGRAMADA, Set.of(EstadoRuta.EN_CURSO, EstadoRuta.CANCELADA),
+            EstadoRuta.EN_CURSO, Set.of(EstadoRuta.FINALIZADA, EstadoRuta.CANCELADA),
+            EstadoRuta.FINALIZADA, Set.of(),
+            EstadoRuta.CANCELADA, Set.of()
     );
 
     private final AsignacionRutaDao asignacionRutaDao;
@@ -94,6 +102,7 @@ public class AsignacionRutaServiceImpl implements AsignacionRutaService {
     public void cambiarEstado(Long idAsignacion, EstadoRuta estado) {
         validarEstadoGestion(estado);
         AsignacionRuta asignacionRuta = obtenerAsignacion(idAsignacion);
+        validarTransicion(asignacionRuta.getEstado(), estado);
         asignacionRuta.setEstado(estado);
         asignacionRuta.getRuta().setEstado(estado);
 
@@ -196,5 +205,11 @@ public class AsignacionRutaServiceImpl implements AsignacionRutaService {
     private void validarEstadoGestion(EstadoRuta estado) {
         Preconditions.checkArgument(estado != null, "El estado es obligatorio");
         Preconditions.checkArgument(ESTADOS_GESTION.contains(estado), "El estado de la asignacion no es valido");
+    }
+
+    private void validarTransicion(EstadoRuta estadoActual, EstadoRuta estadoNuevo) {
+        Set<EstadoRuta> destinosPermitidos = TRANSICIONES_VALIDAS.getOrDefault(estadoActual, Set.of());
+        Preconditions.checkArgument(destinosPermitidos.contains(estadoNuevo),
+                "No se puede cambiar una asignacion de %s a %s", estadoActual, estadoNuevo);
     }
 }

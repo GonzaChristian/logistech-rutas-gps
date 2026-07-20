@@ -13,5 +13,4 @@ public interface ReporteService {
 
     List<Conductor> listarConductores();
 
-    long contarReportes();
 }

@@ -33,6 +33,7 @@ class RutaServiceImplTest {
     @Test
     void registrarDebeValidarLimpiarYGuardarRuta() {
         RutaFormDto form = formValido();
+        form.setEstado(EstadoRuta.CANCELADA);
         when(rutaDao.guardar(any(Ruta.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         rutaService.registrar(form);
@@ -69,8 +70,10 @@ class RutaServiceImplTest {
     @Test
     void actualizarDebeModificarRutaExistente() {
         Ruta existente = rutaExistente();
+        existente.setEstado(EstadoRuta.EN_CURSO);
         RutaFormDto form = formValido();
         form.setDestino("Tienda Centro");
+        form.setEstado(EstadoRuta.CANCELADA);
         when(rutaDao.buscarPorId(1L)).thenReturn(Optional.of(existente));
         when(rutaDao.guardar(any(Ruta.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -78,6 +81,7 @@ class RutaServiceImplTest {
 
         assertThat(actualizada.getIdRuta()).isEqualTo(1L);
         assertThat(actualizada.getDestino()).isEqualTo("Tienda Centro");
+        assertThat(actualizada.getEstado()).isEqualTo(EstadoRuta.EN_CURSO);
         verify(rutaDao).guardar(existente);
     }
 
